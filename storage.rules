@@ -1,0 +1,11 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // ไฟล์ของแต่ละคนอยู่ใต้ users/{uid}/files อ่านและเขียนได้เฉพาะเจ้าของ จำกัดไฟล์ละไม่เกิน 25 MB
+    match /users/{uid}/{allPaths=**} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if request.auth != null && request.auth.uid == uid
+                   && (request.resource == null || request.resource.size < 25 * 1024 * 1024);
+    }
+  }
+}
